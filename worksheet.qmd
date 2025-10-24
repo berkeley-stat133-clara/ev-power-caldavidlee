@@ -171,7 +171,7 @@ us_map
 Use a join to combine the us_map with the state_data
 
 ```{r}
-us_map_joined <- right_join(x=us_map, y = state_data, by = join_by(region == state))
+us_map_joined <- left_join(x=us_map, y = state_data, by = join_by(region == state))
 us_map_joined
 ```
 

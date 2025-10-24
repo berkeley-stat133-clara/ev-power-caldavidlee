@@ -1,7 +1,8 @@
 ---
 title: Clean Energy and Electric Vehicles
 title-prefix: Project 4
-format: stat133handout-typst
+author: David Lee
+format: typst
 ---
 
 ### **Main Research Question**

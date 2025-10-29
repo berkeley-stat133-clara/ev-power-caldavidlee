@@ -23,21 +23,61 @@ So states with higher shares of electricity that comes from clean sources have l
 
 ```{r}
 #Load datasets relevant to Renewable energy usage, energy prices, and total energy usage
-avg_energy_prices = read_csv("av-energy-price-2021-2023.csv")
-renewable_energy_usage_2021 = read_csv("renew-use-2021.csv")
-renewable_energy_usage_2022 = read_csv("renew-use-2022.csv")
-renewable_energy_usage_2023 = read_csv("renew-use-2023.csv")
-total_energy_usage_2021 = read_csv("total-use-2021.csv")
-total_energy_usage_2022 = read_csv("total-use-2022.csv")
-total_energy_usage_2023 = read_csv("total-use-2023.csv")
+avg_energy_prices = read_csv("data/av-energy-price-2021-2023.csv")
+renewable_energy_usage_2021 = read_csv("data/renew-use-2021.csv")
+renewable_energy_usage_2022 = read_csv("data/renew-use-2022.csv")
+renewable_energy_usage_2023 = read_csv("data/renew-use-2023.csv")
+total_energy_usage_2021 = read_csv("data/total-use-2021.csv")
+total_energy_usage_2022 = read_csv("data/total-use-2022.csv")
+total_energy_usage_2023 = read_csv("data/total-use-2023.csv")
+
+
+#Standardize Columns. 
+total_energy_usage_2021 <- total_energy_usage_2021 |>
+    rename()
+
+
+
 
 #Renewable_Energy_Usage data is very messy. Standardized Units? ($, KWH, etc)
 #Create a tidy dataframe with col:
+#Cols: State, Coal, Natural Gas, Petroleum (BTU), nuclear, total_renewable_energy
+#Currently each state has a col, with rows for each energy source. I want to flip this. 
+
+#Transform dataset 
 # state (abbrev)
 #make a pivot_longer for total_energy_usage for each year
-total_energy_usage_2021 |>
-    pivot_longer(cols = 1:length(total_energy_usage_2021), names_to = "")
-#I want each column of 51 locations (50 states and 1 cumulative USA) to be a separate data entry for each usage. 
+#I want each column of 53 locations (50 states and 1 cumulative USA) to be a separate data entry for each usage. 
+
+tidy_2021_energy_usage <- total_energy_usage_2021 |>
+    pivot_longer(cols = 2:length(total_energy_usage_2021), names_to = "state", values_to = "values") |> 
+    pivot_wider(names_from = "Energy_Source", values_from = "values") |>
+    mutate(year = 2021)
+# ---- replicate for 2022 ------
+tidy_2022_energy_usage <- total_energy_usage_2022 |>
+    pivot_longer(cols = 2:length(total_energy_usage_2022), names_to = "state", values_to = "values") |> 
+    pivot_wider(names_from = "Energy_Source", values_from = "values") |>
+    mutate(year = 2022)
+
+# ---- replicate for 2023 ------
+tidy_2023_energy_usage <- total_energy_usage_2023 |>
+    pivot_longer(cols = 2:length(total_energy_usage_2023), names_to = "state", values_to = "values") |> 
+    pivot_wider(names_from = "Energy_Source", values_from = "values") |>
+    mutate(year = 2023)
+
+
+# STANDARDIZE Column Names OR add another column with Year. Then merge all data frames together to create panel data
+
+STANDARDIZED_COLUMN_NAMES <- c("Coal Consumption", "Natural Gas", "Petroleum (BTU)", "Nuclear Energy", "Total Renewable Energy", "Year")
+
+colnames(tidy_2023_energy_usage) = STANDARDIZED_COLUMN_NAMES
+colnames(tidy_2022_energy_usage) = STANDARDIZED_COLUMN_NAMES
+colnames(tidy_2021_energy_usage) = STANDARDIZED_COLUMN_NAMES
+
+### CLEAN avg_energy_prices -> turn each row of STATE(abbrev), AMOUNT (unstructured), 
+#STATE, YEAR (2021-2023)
+## ie., CA, 2021 amount per million BTU, 2022 amount per million BTU, 2023 amount per million BTU
+
 
 
 ```

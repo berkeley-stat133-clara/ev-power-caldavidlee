@@ -123,7 +123,7 @@ single_table <- left_join(joined_energy_usage, tidy_avg_energy_prices, by = c("S
     mutate(Total_Non_Renewable_Energy_Usage = `Coal Consumption`+ `Natural Gas` + `Petroleum (BTU)` + `Nuclear Energy`) |> #Total Non Renewable Energy Usage
     mutate(Total_Energy_Usage = Total_Non_Renewable_Energy_Usage + `Total Renewable Energy`) |> #Total Energy Usage
     mutate(Proportion_of_Renewable_Energy = `Total Renewable Energy`/Total_Energy_Usage, Percentage_Energy_Per_Unit_Of_Price = Proportion_of_Renewable_Energy/Avg_Energy_Price) |>
-    select(State, `Total Renewable Energy`, Year, Avg_Energy_Price, Proportion_of_Renewable_Energy, Percentage_Energy_Per_Unit_Of_Price)
+    select(State, `Total Renewable Energy`, Year, Avg_Energy_Price, Proportion_of_Renewable_Energy, Percentage_Energy_Per_Unit_Of_Price, Total_Non_Renewable_Energy_Usage)
 
 ```
 
@@ -168,6 +168,21 @@ summary(us_joined)
 So a higher number means the state gets more renewable energy for every dollar spent.
 
 What patterns do you notice? 
-- 
+- South Dakota and Iowa
+- Iowa has 40% of 
+```{r}
+single_table[single_table$State == "SD",][c("Proportion_of_Renewable_Energy", "Avg_Energy_Price", "Total_Non_Renewable_Energy_Usage")]
+single_table[single_table$State == "IA",][c("Proportion_of_Renewable_Energy", "Avg_Energy_Price", "Total_Non_Renewable_Energy_Usage")]
+df_top5Proportion <- single_table |>
+    arrange(desc(Proportion_of_Renewable_Energy)) |>
+    slice_head(n=5)
+df_top5ProportionAvgEnergyPrice <- single_table |>
+    arrange(desc(Avg_Energy_Price)) |>
+    slice_head(n=5)
+df_top5Proportion
+df_top5ProportionAvgEnergyPrice
+```
 How does your map help answer the main research question? 
-- 
+- it gives a new metric
+- “How much renewable energy (%) you get per dollar spent on energy.”
+- Proportion of Renewable Energy Divided by Average Energy Price

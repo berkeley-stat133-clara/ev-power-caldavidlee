@@ -134,7 +134,18 @@ single_table <- left_join(joined_energy_usage, tidy_avg_energy_prices, by = c("S
 #    mutate(Year = as.integer(Year)) 
 #us_states <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
 
+test_2021_table <- single_table |>
+    filter(Year == 2021)
+
 us_states <- ne_states(country = "united states of america", returnclass = "sf")
 us_joined <- us_states |>
-    left_join(single_table, by = group_by("State"="postal")) 
+    right_join(test_2021_table, by = join_by("postal"=="State")) 
+#Plot and Color by Proportion
+ggplot(us_joined) +
+    geom_sf(aes(fill=Proportion_of_Renewable_Energy), color = "white") +
+  scale_fill_continuous(name = "Proportion_of_Renewable_Energy", na.value = "grey90") +
+  labs(title = "Proportion of Renewable Energy by States") +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE) +
+  theme_minimal()
+
 ```

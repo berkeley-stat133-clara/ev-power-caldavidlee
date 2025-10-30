@@ -81,6 +81,21 @@ colnames(tidy_2021_energy_usage) = STANDARDIZED_COLUMN_NAMES
 #STATE ABBREVIATION: "^[A-Z]{2}"
 # Amount per million BTU: /d*//./d*
 #\d*\.\d*
+avg_energy_prices |>
+    separate_wider_delim(
+    "Total energy average price, dollars per million Btu,,,",
+    delim = ",",
+    names = c("State", "2021", "2022", "2023")
+    ) |>
+    #Filters empty/header row
+    filter(!State %in% c("", "State", NA)) |>
+    #extract numeric values 
+    mutate(
+        across('2021':'2023', ~parse_number(.x))
+    )
+
+
+
 
 ```
 

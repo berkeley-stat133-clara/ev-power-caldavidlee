@@ -11,7 +11,12 @@ format: typst
 ```{r}
 library(tidyverse)
 library(stringr)
-#library()
+library(leaflet)
+library(sf)
+library(maps)
+library(rnaturalearth)
+
+
 ```
 
 ## **Part 1:** **Defining Research Question**
@@ -125,5 +130,11 @@ single_table <- left_join(joined_energy_usage, tidy_avg_energy_prices, by = c("S
 ## **Part 4: Mapping Visualization**
 
 ```{r}
+#df <- single_table |>
+#    mutate(Year = as.integer(Year)) 
+#us_states <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
 
+us_states <- ne_states(country = "united states of america", returnclass = "sf")
+us_joined <- us_states |>
+    left_join(single_table, by = group_by("State"="postal")) 
 ```

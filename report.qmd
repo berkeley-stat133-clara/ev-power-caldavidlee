@@ -78,7 +78,9 @@ colnames(tidy_2021_energy_usage) = STANDARDIZED_COLUMN_NAMES
 #STATE, YEAR (2021-2023)
 ## ie., CA, 2021 amount per million BTU, 2022 amount per million BTU, 2023 amount per million BTU
 
-
+#STATE ABBREVIATION: "^[A-Z]{2}"
+# Amount per million BTU: /d*//./d*
+#\d*\.\d*
 
 ```
 

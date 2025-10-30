@@ -120,10 +120,10 @@ joined_energy_usage <- bind_rows(tidy_2021_energy_usage, tidy_2022_energy_usage,
 
 single_table <- left_join(joined_energy_usage, tidy_avg_energy_prices, by = c("State", "Year")) |>
    # mutate(Total_Coal_Price = Avg_Energy_Price * `Coal Consumption`, Total_Natural_Gas_Price = Avg_Energy_Price * `Natural Gas`, Total_Petroleum_Price = Avg_Energy_Price * `Petroleum (BTU)`, Total_Nuclear_Energy_Price = Avg_Energy_Price * `Nuclear Energy`, Total_Renewable_Energy_Price = Avg_Energy_Price * `Total Renewable Energy`) |> #Total Price of Fuel for Components
-    mutate(Total_Non_Renewable_Energy_Usage = `Coal Consumption`+ `Natural Gas` + `Petroleum (BTU)` + `Nuclear Energy`) |> #Total Non Renewable Energy Usaeg
+    mutate(Total_Non_Renewable_Energy_Usage = `Coal Consumption`+ `Natural Gas` + `Petroleum (BTU)` + `Nuclear Energy`) |> #Total Non Renewable Energy Usage
     mutate(Total_Energy_Usage = Total_Non_Renewable_Energy_Usage + `Total Renewable Energy`) |> #Total Energy Usage
-    mutate(Proportion_of_Renewable_Energy = `Total Renewable Energy`/Total_Energy_Usage) |>
-    select(State, `Total Renewable Energy`, Year, Avg_Energy_Price, Proportion_of_Renewable_Energy)
+    mutate(Proportion_of_Renewable_Energy = `Total Renewable Energy`/Total_Energy_Usage, Percentage_Energy_Per_Unit_Of_Price = Proportion_of_Renewable_Energy/Avg_Energy_Price) |>
+    select(State, `Total Renewable Energy`, Year, Avg_Energy_Price, Proportion_of_Renewable_Energy, Percentage_Energy_Per_Unit_Of_Price)
 
 ```
 
@@ -142,10 +142,32 @@ us_joined <- us_states |>
     right_join(test_2021_table, by = join_by("postal"=="State")) 
 #Plot and Color by Proportion
 ggplot(us_joined) +
-    geom_sf(aes(fill=Proportion_of_Renewable_Energy), color = "white") +
-  scale_fill_continuous(name = "Proportion_of_Renewable_Energy", na.value = "grey90") +
-  labs(title = "Proportion of Renewable Energy by States") +
+    geom_sf(aes(fill=Percentage_Energy_Per_Unit_Of_Price), color = "white") +
+  scale_fill_continuous(name = "Percentage Energy Per Unit Of Price", na.value = "grey90") +
+  labs(title = "Percentage Energy Per Unit Of Price by States") +
   coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE) +
   theme_minimal()
 
 ```
+
+### Title: Higher Number
+
+### Overview:
+Do states with higher shares of electricity that comes from clean sources have lower average electricity prices?
+
+### Data and Methods:
+Show keys tables or data summaries (head() of joined dataset)
+
+```{r}
+head(us_joined)
+summarize(us_joined)
+summary(us_joined)
+```
+
+### Analysis: 
+So a higher number means the state gets more renewable energy for every dollar spent.
+
+What patterns do you notice? 
+- 
+How does your map help answer the main research question? 
+- 

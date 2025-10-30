@@ -17,7 +17,7 @@ library(stringr)
 ## **Part 1:** **Defining Research Question**
 
 Chosen Question:
-So states with higher shares of electricity that comes from clean sources have lower average electricity prices?
+Do states with higher shares of electricity that comes from clean sources have lower average electricity prices?
 
 ## **Part 2: Data Preparation and Cleaning**
 
@@ -68,7 +68,7 @@ tidy_2023_energy_usage <- total_energy_usage_2023 |>
 
 # STANDARDIZE Column Names OR add another column with Year. Then merge all data frames together to create panel data
 
-STANDARDIZED_COLUMN_NAMES <- c("Coal Consumption", "Natural Gas", "Petroleum (BTU)", "Nuclear Energy", "Total Renewable Energy", "Year")
+STANDARDIZED_COLUMN_NAMES <- c("State", "Coal Consumption", "Natural Gas", "Petroleum (BTU)", "Nuclear Energy", "Total Renewable Energy", "Year")
 
 colnames(tidy_2023_energy_usage) = STANDARDIZED_COLUMN_NAMES
 colnames(tidy_2022_energy_usage) = STANDARDIZED_COLUMN_NAMES
@@ -81,7 +81,7 @@ colnames(tidy_2021_energy_usage) = STANDARDIZED_COLUMN_NAMES
 #STATE ABBREVIATION: "^[A-Z]{2}"
 # Amount per million BTU: /d*//./d*
 #\d*\.\d*
-avg_energy_prices |>
+tidy_avg_energy_prices <- avg_energy_prices |>
     separate_wider_delim(
     "Total energy average price, dollars per million Btu,,,",
     delim = ",",
@@ -92,7 +92,11 @@ avg_energy_prices |>
     #extract numeric values 
     mutate(
         across('2021':'2023', ~parse_number(.x))
-    )
+    ) |>
+    pivot_longer(cols = c("2021", "2022", "2023"), names_to = "Year", values_to = "Avg_Energy_Price") |> 
+    mutate(Year = as.double(Year), Avg_Energy_Price = Avg_Energy_Price/1000000)
+#Price PER MILLION IS NOW PRICE PER BTU
+    
 
 
 
@@ -102,6 +106,19 @@ avg_energy_prices |>
 ## **Part 3: Joining / Pivoting Datasets for Analysis**
 
 ```{r}
+#combine yearly files into single tables as needed
+
+#Document whcih method you chose and why. Create new variables such as % of renewable ernergy out of total energy, ratio of EV registrations, etc
+
+#combine 2021, 2022, 2023 data to have panel data. 
+joined_energy_usage <- bind_rows(tidy_2021_energy_usage, tidy_2022_energy_usage, tidy_2023_energy_usage) 
+
+single_table <- left_join(joined_energy_usage, tidy_avg_energy_prices, by = c("State", "Year")) |>
+   # mutate(Total_Coal_Price = Avg_Energy_Price * `Coal Consumption`, Total_Natural_Gas_Price = Avg_Energy_Price * `Natural Gas`, Total_Petroleum_Price = Avg_Energy_Price * `Petroleum (BTU)`, Total_Nuclear_Energy_Price = Avg_Energy_Price * `Nuclear Energy`, Total_Renewable_Energy_Price = Avg_Energy_Price * `Total Renewable Energy`) |> #Total Price of Fuel for Components
+    mutate(Total_Non_Renewable_Energy_Usage = `Coal Consumption`+ `Natural Gas` + `Petroleum (BTU)` + `Nuclear Energy`) |> #Total Non Renewable Energy Usaeg
+    mutate(Total_Energy_Usage = Total_Non_Renewable_Energy_Usage + `Total Renewable Energy`) |> #Total Energy Usage
+    mutate(Proportion_of_Renewable_Energy = `Total Renewable Energy`/Total_Energy_Usage) |>
+    select(State, `Total Renewable Energy`, Year, Avg_Energy_Price, Proportion_of_Renewable_Energy)
 
 ```
 
